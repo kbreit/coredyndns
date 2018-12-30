@@ -1,4 +1,13 @@
-import paramiko
+# import paramiko
+
+class Lease():
+
+    def __init__(self, ip, mac, expiration, host, domain):
+        self.ip = ip
+        self.mac = mac
+        self.expiration = expiration
+        self.host = host
+        self.domain = domain
 
 class DHCP():
     
@@ -8,6 +17,7 @@ class DHCP():
         self.username = username
         self.password = password
         self.client = None
+        self.leases = dict()
     
     def connect(self):
         self.client = paramiko.SSHClient()
@@ -20,5 +30,22 @@ class DHCP():
     def disconnect(self):
         self.client.close()
         
-    def exec_command(command):
+    def exec_command(self, command):
         return self.client.exec_command(command)
+        
+    def add_lease(self, host, lease):
+        self.leases[host] = lease
+        
+    def del_lease(self, name):
+        del self.leases[host]
+        
+    def parse_leases(self, data):
+        lines = data.split("\n")
+        for line, i in lines.enumerate():
+            if i != 0:  # First line will be headers, skip
+                column = line.split(" ")
+                lease = dhcp.Lease(column[0],
+                                   column[1],
+                                   column[2].join(column[3]),
+                                   column[5])
+                self.add_lease(lease.host, lease)

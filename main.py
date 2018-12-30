@@ -12,14 +12,18 @@ def get_config():
 def main():
     # Read configuration
     get_config()
+
     # Create connection via paramiko
-    server = dhcp.DHCP()
+    server = dhcp.DHCP(**config)
     server.connect()
+
     # Query DHCP leases
     stdin, stdout, stderr = server.exec_command("show dhcp leases")
     print(stdin)
     print(stdout)
     print(stderr)
+    server.parse_leases(stdout)
+
     # Set etcd entries
     
 
