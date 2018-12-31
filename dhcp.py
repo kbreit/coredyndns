@@ -8,11 +8,16 @@ class Lease():
         self.expiration = expiration
         self.host = host
         self.domain = domain
+        self.dns_record = None
+        
+    def get_dns_record(self):
+        self.dns_record = {'ip': self.ip}
+        return self.domain, self.dns_record
 
 class DHCP():
     
-    def __init__(self, ip=None, port=22, username=None, password=None):
-        self.ip = ip
+    def __init__(self, host, port=22, username=None, password=None):
+        self.host = host
         self.port = port
         self.username = username
         self.password = password
@@ -49,3 +54,4 @@ class DHCP():
                                    column[2].join(column[3]),
                                    column[5])
                 self.add_lease(lease.host, lease)
+

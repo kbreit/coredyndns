@@ -1,3 +1,8 @@
-ip=192.0.1.1
-username=admin
-password=admin
+# DHCP server configuration
+dhcp_hostname=192.0.1.1
+dhcp_username=user
+dhcp_password=pass
+
+# etcd server configuration
+etcd_hostname=192.0.1.2
+etcd_port=2379
