@@ -13,7 +13,6 @@ class DB():
     def connect(self):
         self.connection = etcd.Client(host=self.hostname,
                                       port=self.port)
-        #print(self.connection.machines)
         return self.connection
 
     def get_key(self, key, recursive=False):
@@ -32,8 +31,8 @@ class DB():
         return self.connection.delete(dir, recursive=True)
     
     @staticmethod
-    def format_dir(prefix, domain):
+    def format_dir(prefix, domain, hostname):
         path_prefix = prefix
         for i in reversed(domain.split('.')):
             path_prefix = "{0}/{1}".format(path_prefix, i)
-        return path_prefix
+        return "{0}/{1}".format(path_prefix, hostname)

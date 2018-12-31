@@ -1,4 +1,4 @@
-# import paramiko
+import paramiko
 
 class Lease():
 
@@ -26,8 +26,9 @@ class DHCP():
     
     def connect(self):
         self.client = paramiko.SSHClient()
-        self.client.load_system_host_keys()
-        self.client.connect(self.ip,
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        # self.client.load_system_host_keys()
+        self.client.connect(self.host,
                             port=self.port,
                             username=self.username,
                             password=self.password)
@@ -44,14 +45,21 @@ class DHCP():
     def del_lease(self, name):
         del self.leases[host]
         
-    def parse_leases(self, data):
-        lines = data.split("\n")
-        for line, i in lines.enumerate():
-            if i != 0:  # First line will be headers, skip
-                column = line.split(" ")
-                lease = dhcp.Lease(column[0],
-                                   column[1],
-                                   column[2].join(column[3]),
-                                   column[5])
-                self.add_lease(lease.host, lease)
+    def parse_leases(self, data, domain):
+        lines = data.replace("  ", " ").split("\n")
+        iterlines = iter(lines)
+        next(iterlines)
+        next(iterlines)
+        for line in iterlines:
+            row = line.split(" ")
+            try:
+                if row[5] != "":
+                    lease = Lease(row[0],
+                                  row[1],
+                                  row[2].join(row[3]),
+                                  row[5],
+                                  domain)
+                    self.add_lease(lease.host, lease)
+            except IndexError:
+                pass
 

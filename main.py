@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import dhcp
 import db
 
@@ -22,29 +23,27 @@ def main():
     server = dhcp.DHCP(config['dhcp_hostname'],
                        port=config['dhcp_port'],
                        username=config['dhcp_username'],
-                       password=['dhcp_password'])
-    # server.connect()
+                       password=config['dhcp_password'])
+    server.connect()
 
     # Query DHCP leases
-    # stdin, stdout, stderr = server.exec_command("show dhcp leases")
-    #print(stdin)
-    #print(stdout)
-    #print(stderr)
-    # server.parse_leases(stdout)
+    stdin, stdout, stderr = server.exec_command("/config/scripts/getdhcpleases")
+    server.parse_leases(stdout.read().decode('utf-8'), config['etcd_domain'])
 
     # Set etcd entries
     client = db.DB('192.168.15.200', port=2379)
-
     client.connect()
-    path = client.format_dir(config['etcd_prefix'],
-                             'testdns.home.kevinbreit.net')
-    entry = {'host': '192.168.15.201',
-             'ttl': 900,
-             }
-    client.set_key(path,
-                   entry,
-                   ttl=60)
-    print(client.get_key(path, recursive=True))
+
+    for hostname, lease in server.leases.items():
+        path = client.format_dir(config['etcd_prefix'],
+                                 config['etcd_domain'],
+                                 hostname)
+        entry = {'host': '192.168.15.201',
+                 'ttl': 900,
+                 }
+        client.set_key(path,
+                       entry,
+                       ttl=60)
 
 
 if __name__ == '__main__':
