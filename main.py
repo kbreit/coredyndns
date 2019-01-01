@@ -31,14 +31,14 @@ def main():
     server.parse_leases(stdout.read().decode('utf-8'), config['etcd_domain'])
 
     # Set etcd entries
-    client = db.DB('192.168.15.200', port=2379)
+    client = db.DB(config['etcd_hostname'], port=2379)
     client.connect()
 
     for hostname, lease in server.leases.items():
         path = client.format_dir(config['etcd_prefix'],
                                  config['etcd_domain'],
                                  hostname)
-        entry = {'host': '192.168.15.201',
+        entry = {'host': lease.ip,
                  'ttl': 900,
                  }
         client.set_key(path,
