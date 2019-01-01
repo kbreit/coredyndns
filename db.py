@@ -19,7 +19,10 @@ class DB():
         if recursive is True:
             return self.connection.read(key, recursive=True)
         else:
-            return self.connection.read(key).value
+        	try:
+	            return self.connection.read(key).value
+	        except etcd.EtcdKeyNotFound:
+	        	return -1
        
     def set_key(self, key, value, ttl=None):
         self.connection.write(key, value, ttl=ttl)
