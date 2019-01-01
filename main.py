@@ -42,10 +42,10 @@ def main():
                  'ttl': 900,
                  }
         if client.get_key(path) is -1:
-	        client.set_key(path,
-    	                   entry,
-        	               ttl=60)
-			print("DHCP entry added for {0} at {1}".format(hostname, lease.ip)
+            client.set_key(path,
+                           entry,
+                           ttl=60)
+            print("DHCP entry added for {0} at {1}".format(hostname, lease.ip))
 
 if __name__ == '__main__':
     main()
